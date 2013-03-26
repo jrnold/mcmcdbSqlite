@@ -1,10 +1,10 @@
 Package: mcmcdbSqlite
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Author: jeff
-Version: 1.0
+Maintainer: Jeffrey Arnold <jeffrey.arnold@gmail.com>
+Author: Jeffrey Arnold <jeffrey.arnold@gmail.com>
+Version: 0.0.1
 License: GPL-3
-Title: 
-Description: 
+Title: SQLite MCMC sample database 
+Description: SQLite backend for mcmcdb databases for MCMC samples.
 Suggests:
     testthat,
     roxygen2
