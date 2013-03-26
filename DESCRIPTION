@@ -1,12 +1,20 @@
 Package: mcmcdbSqlite
-Maintainer: Jeffrey Arnold <jeffrey.arnold@gmail.com>
-Author: Jeffrey Arnold <jeffrey.arnold@gmail.com>
+Authors@R: c(person("Jeffrey B.", "Arnold", role = c("aut", "cre"),
+    email = "jeffrey.arnold@gmail.com"))
 Version: 0.0.1
 License: GPL-3
-Title: SQLite MCMC sample database 
+Title: SQLite MCMC sample database
 Description: SQLite backend for mcmcdb databases for MCMC samples.
+Require: R (>= 2.15.0),
+    methods
+Imports:
+    DBI,
+    RSQLite,
+    plyr,
+    whisker,
+    mcmcdb
 Suggests:
     testthat,
     roxygen2
 Collate:
-    'mcmcdbSqlite-package.r'
+    'package.R'

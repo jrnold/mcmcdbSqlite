@@ -5,4 +5,9 @@
 #' 
 #' @name mcmcdbSqlite
 #' @docType package
+#' @import DBI
+#' @import RSQLite
+#' @import plyr
+#' @import whisker
+#' @import mcmcdb
 NULL
