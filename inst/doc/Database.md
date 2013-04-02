@@ -19,5 +19,5 @@
 Initialize: 
 
 - create tables
-- need names of parameters in order to create rows of samples.
-- Other rows? 
+- need names of parameters in order to create columns of samples.
+- Other columns
