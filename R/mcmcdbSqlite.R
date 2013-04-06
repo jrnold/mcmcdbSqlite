@@ -16,73 +16,87 @@ NULL
 setClass("McmcdbSqlite", "Mcmcdb",
          representation = representation(connection = "SQLiteConnection"))
 
-## tablelist <-
-##   list(
-##     chains =
-##     SqlTable(name = "chains",
-##              columns =
-##              list(SqlColumn("chain_id", "INTEGER",
-##                             "PRIMARY KEY")))
-##     ## iters = 
-##     ## SqlTable(name = "iters",
-##     ##          columns =
-##     ##          list(
-##     ##            SqlColumn(name = "chain_id",
-##     ##                      type = "INTEGER",
-##     ##                      constraints = "PRIMARY KEY"),
-               
-##     ##            type = c("INTEGER", "INTEGER")),
-##     ##          constraints = c("PRIMARY KEY", "PRIMARY KEY")),
-##     ## flatpars =
-##     ## SqlTable(name = "flatpars",
-##     ##          columns =
-##     ##          data.frame(name = c("flatpar", "pararray", "offset"),
-##     ##                     type = c("VARCHAR", "VARCHAR", "INTEGER")),
-##     ##          constraints = c("PRIMARY KEY", "", "")),
-##     ## pararrays =
-##     ## SqlTable(name = "pararrays",
-##     ##          columns =
-##     ##          data.frame(name = c("pararray", "ndim"),
-##     ##                     type = c("VARCHAR", "INTEGER")),
-##     ##          constraints = c("PRIMARY KEY")),
-##     ## pardim =
-##     ## SqlTable(name = "pardim",
-##     ##          columns = 
-##     ##          data.frame(name = c("pararray", "dim", "index"),
-##     ##                     type = c("VARCHAR", "INTEGER", "INTEGER")),
-##     ##          constraints = c("PRIMARY KEY", "PRIMARY KEY", "")),
-##     ## latpar_chains =
-##     ## SqlTable(name = "flatpar_chains",
-##     ##          columns =
-##     ##          data.frame(name = c("flatpar", "chain_id"),
-##     ##                     type = c("VARCHAR", "INTEGER")),
-##     ##          constraints = c("PRIMARY KEY", "")),
-##     ## samples =
-##     ## SqlTable(name = "samples",
-##     ##          columns = 
-##     ##          data.frame(name = c("chain_id", "iter", "flatpar", "val"),
-##     ##                     type = c("VARCHAR", "INTEGER", "INTEGER", "NUMERIC"))
-##     ##          constraints =
-##     ##          c("PRIMARY KEY", "PRIMARY KEY", "PRIMARY KEY", "")),
-##     ## metadata =
-##     ## SqlTable(name = "metadata",
-##     ##          columns =
-##     ##          data.frame(name = c("name", "value"),
-##     ##                     type = c("VARCHAR", "BLOB")),
-##     ##          constraints = c("PRIMARY KEY", "")),
-##     ## model_data =
-##     ## SqlTable(name = "model_data",
-##     ##          columns =
-##     ##          data.frame(name = c("name", "value"),
-##     ##                     type = c("VARCHAR", "BLOB"))
-##     ##          contraints = c("PRIMARY KEY", "")),
-##     ## version =
-##     ## SqlTable(name = "version",
-##     ##          columns =
-##     ##          data.frame(name = "version",
-##     ##                     type = "VARCHAR"),
-##     ##          constraints = c("PRIMARY KEY"))
-##     )
+FK_OPTS <- paste("ON DELETE CASCADE", "ON UPDATE CASCADE",
+                 "DEFERRABLE INITIALLY DEFERRED")
+
+chains <-
+  SqlTable("chains",
+           list(SqlColumn("chain_id", "INTEGER",
+                          SqlConstraints(c("PRIMARY KEY")))))
+
+iters <-
+  SqlTable("iters",
+           list(SqlColumn("chain_id", "INTEGER",
+                          SqlConstraints("PRIMARY KEY")),
+                SqlColumn("iter", "INTEGER",
+                          SqlConstraints(c("PRIMARY KEY")))),
+           SqlConstraints(paste("FOREIGN KEY (chain_id) REFERENCES chains (chain_id)",
+                                FK_OPTS)))
+
+pararrays <-
+  SqlTable("pararrays",
+           list(SqlColumn("pararray", "VARCHAR",
+                          SqlConstraints("PRIMARY KEY"))))
+
+pardim <-
+  SqlTable("pararrays",
+           list(SqlColumn("pararray", "VARCHAR",
+                          SqlConstraints("PRIMARY KEY")),
+                SqlColumn("dimension", "INTEGER",
+                          SqlConstraints("PRIMARY KEY")),
+                SqlColumn("dimsize", "INTEGER",
+                          SqlConstraints("NOT NULL"))),
+           SqlConstraints(paste("FOREIGN KEY (pararray) REFERENCES pararrays (pararray)",
+                                FK_OPTS)))
+
+flatpars <-
+  SqlTable("flatpars",
+           list(SqlColumn("flatpar", "VARCHAR",
+                          SqlConstraints("PRIMARY KEY")),
+                SqlColumn("pararray", "VARCHAR"),
+                SqlColumn("paridx", "INTEGER", SqlConstraints("NOT NULL"))),
+           SqlConstraints(paste("FOREIGN KEY (pararray) REFERENCES pararrays (pararray)",
+                                FK_OPTS)))
+
+flatpars <-
+  SqlTable("flatpar_chains",
+           list(SqlColumn("flatpar", "VARCHAR",
+                          SqlConstraints("PRIMARY KEY")),
+                SqlColumn("chain_id", "INTEGER",
+                          SqlConstraints("PRIMARY KEY")),
+                SqlColumn("init", "FLOAT")),
+           SqlConstraints(paste("FOREIGN KEY (flatpar) REFERENCES flatpars (flatpar)",
+                                FK_OPTS)),
+           SqlConstraints(paste("FOREIGN KEY (chain_id) REFERENCES chains (chain_id)",
+                                FK_OPTS)))
+
+samples <-
+  SqlTable("flatpars",
+           list(SqlColumn("flatpar", "VARCHAR",
+                          SqlConstraints("PRIMARY KEY")),
+                SqlColumn("chain_id", "INTEGER",
+                          SqlConstraints("PRIMARY KEY")),
+                SqlColumn("iter", "INTEGER",
+                          SqlConstraints("PRIMARY KEY")),
+                SqlColumn("val", "FLOAT")),
+           SqlConstraints(paste("FOREIGN KEY (flatpar) REFERENCES flatpars (flatpar)",
+                                FK_OPTS),
+                          paste("FOREIGN KEY (chain_id, iter) REFERENCES iters (chain_id, iter)",
+                                FK_OPTS)))
+
+metadata <-
+  SqlTable("metadata",
+           list(SqlColumn("ky", "VARCHAR", SqlConstraints("PRIMARY KEY"),
+                SqlColumn("val", "BLOB"))))
+
+model_data <-
+  SqlTable("model_data",
+           list(SqlColumn("ky", "VARCHAR", SqlConstraints("PRIMARY KEY"),
+                SqlColumn("val", "BLOB"))))
+
+version <-
+  SqlTable("version",
+           list(SqlColumn("version", "VARCHAR", SqlConstraints("PRIMARY KEY"))))
 
 #' Create \code{McmcdbSqlite} object
 #'

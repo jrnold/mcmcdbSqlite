@@ -1,6 +1,7 @@
-setClass("SqlConstraints",
-         contains = "character",
-         representation = representation(names = "character"))
+SqlConstraints <-
+  setClass("SqlConstraints",
+           contains = "character",
+           representation = representation(names = "character"))
 
 setMethod("initialize", "SqlConstraints", 
           function(.Object, .Data = character()) {
@@ -20,10 +21,13 @@ setMethod("show", "SqlConstraints",
 setMethod("format", "SqlConstraints", 
   function(x, collapse=TRUE) {
     sql <-
-      mapply(function(name, value) sprintf("CONSTRAINT %s %s",
-                                           if (is.na(name)) "" else name,
-                                           value),
-             names(x), unname(x))
+      mapply(function(name, value) {
+        if (is.na(name) | name == "") {
+          value
+        } else {
+          paste("CONSTRAINT", name, value)
+        }
+      }, names(x), unname(x))
     if (collapse) {
       sql <- paste(sql, collapse=" ")
     }
@@ -59,7 +63,7 @@ setClass("SqlTable",
          representation(name = "character",
                         database = "character",
                         columns = "list",
-                        constraints = "SqlConstraints")
+                        constraints = "SqlConstraints"))
 
 SqlTable <- function(name, database = character(), columns = list(), constraints = character()) {
   new("SqlTable", name = name[1], database = database,
