@@ -30,3 +30,17 @@ sql_create_table <- function(table_name, columns, temp=FALSE,
                                 anyconstr = as.logical(length(constraints)),
                                 constraints = paste(constraints, collapse=", ")))
 }
+
+emptystring <- function(x) {
+  if (is(x, "character")) {
+    x == "" | is.na(x)
+  } else if (is.null(x)) {
+    TRUE
+  } else {
+    FALSE
+  }
+}
+
+constraints <- c(a = "a", b = "c", "d")
+
+foo <- SqlColumn("foo", "INTEGER", c("a" = "PRIMARY KEY", "CHECK (foo > 1)"))

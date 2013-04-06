@@ -11,3 +11,5 @@
 #' @import whisker
 #' @import mcmcdb
 NULL
+
+setGeneric("format")

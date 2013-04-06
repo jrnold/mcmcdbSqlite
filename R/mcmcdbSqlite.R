@@ -1,4 +1,5 @@
 #' @include package.R
+#' @include sql.R
 NULL
 
 #' @docType class
@@ -14,28 +15,6 @@ NULL
 #' }
 setClass("McmcdbSqlite", "Mcmcdb",
          representation = representation(connection = "SQLiteConnection"))
-
-
-setClass("SqlTable",
-         representation =
-         representation(name = "character",
-                        columns = "list",
-                        constraints = "character"))
-
-SqlTable <- function(name, columns = list(), constraints = character()) {
-  new("SqlTable", name = name, columns = columns, constraints = constraints)
-}
-
-
-setClass("SqlColumn",
-         representation =
-         representation(name = "character",
-                        type = "character",
-                        constraints = "character"))
-
-SqlColumn <- function(name, type, constraints = character()) {
-  new("SqlColumn", name = name, type = type, constraints = constraints)
-}
 
 ## tablelist <-
 ##   list(
