@@ -40,7 +40,7 @@ setClass("SqlColumn",
                         type = "character",
                         constraints = "SqlConstraints"))
 
-SqlColumn <- function(name, type, constraints = character()) {
+SqlColumn <- function(name, type, constraints = SqlConstraints()) {
   new("SqlColumn", name = name[1], type = type[1], constraints = constraints)
 }
 
@@ -61,26 +61,36 @@ setMethod("show", "SqlColumn",
 setClass("SqlTable",
          representation =
          representation(name = "character",
-                        database = "character",
                         columns = "list",
-                        constraints = "SqlConstraints"))
+                        constraints = "SqlConstraints",
+                        database = "character"))
 
-SqlTable <- function(name, database = character(), columns = list(), constraints = character()) {
-  new("SqlTable", name = name[1], database = database,
-      columns = columns, constraints = SqlConstraints())
+
+SqlTable <- function(name, columns = list(), constraints = SqlConstraints(),
+                     database = character()) {
+  new("SqlTable", name = name[1], columns = columns,
+      constraints = constraints, database = database)
 }
 
-setMethod("format", "SqlTable",
-          function(x, temp = FALSE, ifnotexists=FALSE) {
-            col_constr <-
-              paste(format(x@columns), format_constraints(x@constraints),
-                    sep = ", ")
-            table_name <- paste(x@database, x@name, sep=".")
-            sprintf("CREATE %sTABLE%s %s (%s);",
-                    if (temp) "TEMP " else "",
-                    if (ifnotexists) " IF NOT EXISTS" else "",
-                    table_name, col_constr)
-          })
+format.SqlTable <- function(x, temp = FALSE, ifnotexists=FALSE) {
+  columns <- paste(sapply(x@columns, format), collapse = ", ")
+  if (length(x@constraints)) {
+    colconstr <- paste(columns, format(x@constraints), sep = ", ")
+  } else {
+    colconstr <- columns
+  }
+  if (emptystring(x@database)) {
+    table_name <- x@name
+  } else {
+    table_name <- paste(x@database, x@name, sep=".")
+  }
+  sprintf("CREATE %sTABLE%s %s (%s);",
+          if (temp) "TEMP " else "",
+          if (ifnotexists) " IF NOT EXISTS" else "",
+          table_name, colconstr)
+}
+
+setMethod("format", "SqlTable", format.SqlTable)
 
 setMethod("show", "SqlTable",
           function(object) {
