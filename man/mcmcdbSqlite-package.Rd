@@ -1,6 +1,5 @@
 \docType{package}
-\name{mcmcdbSqlite}
-\alias{mcmcdbSqlite}
+\name{mcmcdbSqlite-package}
 \alias{mcmcdbSqlite-package}
 \title{mcmcdbSqlite}
 \description{

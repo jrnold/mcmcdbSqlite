@@ -10,10 +10,14 @@ Require: R (>= 2.15.0),
 Imports:
     DBI,
     RSQLite,
-    plyr,
     mcmcdb
 Suggests:
     testthat,
     roxygen2
 Collate:
     'package.R'
+    'utilities.R'
+    'class-SqlConstraints.R'
+    'class-SqlColumn.R'
+    'class-SqlTable.R'
+    'mcmcdbSqlite.R'
